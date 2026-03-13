@@ -12,9 +12,9 @@ mod constants;
 use crate::epd3in52::constants::*;
 
 /// Width of epd1in54 in pixels
-pub const WIDTH: u32 = 240;
+pub const WIDTH: u32 = 360;
 /// Height of epd1in54 in pixels
-pub const HEIGHT: u32 = 360;
+pub const HEIGHT: u32 = 240;
 /// Default Background Color (white)
 pub const DEFAULT_BACKGROUND_COLOR: Color = Color::White;
 const IS_BUSY_LOW: bool = true;
@@ -372,8 +372,8 @@ mod tests {
 
     #[test]
     fn epd_size() {
-        assert_eq!(WIDTH, 200);
-        assert_eq!(HEIGHT, 200);
+        assert_eq!(WIDTH, 240);
+        assert_eq!(HEIGHT, 360);
         assert_eq!(DEFAULT_BACKGROUND_COLOR, Color::White);
     }
 }
