@@ -361,7 +361,7 @@ fn expand_bits(bits: u8) -> [u8; 2] {
     x = (x | (x << 4)) & 0x0F0F;
     x = (x | (x << 2)) & 0x3333;
     x = (x | (x << 1)) & 0x5555;
-    x = x | (x << 1);
+    x = x | x << 1;
 
     [(x >> 8) as u8, (x & 0xFF) as u8]
 }
