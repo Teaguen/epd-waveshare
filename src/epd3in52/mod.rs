@@ -26,19 +26,10 @@ pub(crate) mod command;
 use self::command::Command;
 use crate::buffer_len;
 
-/// B/W-only display buffer for the 3.52" EPD
-#[cfg(feature = "graphics")]
-pub type Display3in52 = crate::graphics::Display<
-    WIDTH,
-    HEIGHT,
-    false,
-    { buffer_len(WIDTH as usize, HEIGHT as usize) },
-    Color,
->;
 
 /// B/W/R tricolor display buffer for the 3.52" EPD
 #[cfg(feature = "graphics")]
-pub type Display3in52Tri = crate::graphics::Display<
+pub type Display3in52 = crate::graphics::Display<
     WIDTH,
     HEIGHT,
     true,
@@ -356,16 +347,6 @@ where
     }
 }
 
-fn expand_bits(bits: u8) -> [u8; 2] {
-    let mut x = bits as u16;
-
-    x = (x | (x << 4)) & 0x0F0F;
-    x = (x | (x << 2)) & 0x3333;
-    x = (x | (x << 1)) & 0x5555;
-    x = x | (x << 1);
-
-    [(x >> 8) as u8, (x & 0xFF) as u8]
-}
 
 #[cfg(test)]
 mod tests {
