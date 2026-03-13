@@ -20,14 +20,13 @@ pub const DEFAULT_BACKGROUND_COLOR: Color = Color::White;
 const IS_BUSY_LOW: bool = true;
 const SINGLE_BYTE_WRITE: bool = true;
 
-use crate::color::Color;
+use crate::color::{Color, TriColor};
 
 pub(crate) mod command;
 use self::command::Command;
 use crate::buffer_len;
 
-/// Full size buffer for use with the 1in54b EPD
-/// TODO this should be a TriColor, but let's keep it as is at first
+/// B/W-only display buffer for the 3.52" EPD
 #[cfg(feature = "graphics")]
 pub type Display3in52 = crate::graphics::Display<
     WIDTH,
@@ -35,6 +34,16 @@ pub type Display3in52 = crate::graphics::Display<
     false,
     { buffer_len(WIDTH as usize, HEIGHT as usize) },
     Color,
+>;
+
+/// B/W/R tricolor display buffer for the 3.52" EPD
+#[cfg(feature = "graphics")]
+pub type Display3in52Tri = crate::graphics::Display<
+    WIDTH,
+    HEIGHT,
+    true,
+    { buffer_len(WIDTH as usize, HEIGHT as usize * 2) },
+    TriColor,
 >;
 
 /// Epd1in54b driver
@@ -119,11 +128,7 @@ where
         self.send_resolution(spi)?;
 
         self.interface.cmd(spi, Command::DataStartTransmission1)?;
-
-        for b in black {
-            let expanded = expand_bits(*b);
-            self.interface.data(spi, &expanded)?;
-        }
+        self.interface.data(spi, black)?;
         Ok(())
     }
 
@@ -134,7 +139,10 @@ where
         chromatic: &[u8],
     ) -> Result<(), SPI::Error> {
         self.interface.cmd(spi, Command::DataStartTransmission2)?;
-        self.interface.data(spi, chromatic)?;
+        //Chromatic (red) needs inverted
+        for b in chromatic {
+            self.interface.data(spi, &[!b])?;
+        }
         Ok(())
     }
 }
@@ -217,12 +225,7 @@ where
         self.send_resolution(spi)?;
 
         self.interface.cmd(spi, Command::DataStartTransmission1)?;
-
-        for b in buffer {
-            // Two bits per pixel
-            let expanded = expand_bits(*b);
-            self.interface.data(spi, &expanded)?;
-        }
+        self.interface.data(spi, buffer)?;
 
         //NOTE: Example code has a delay here
 
@@ -276,10 +279,8 @@ where
 
         // Clear the black
         self.interface.cmd(spi, Command::DataStartTransmission1)?;
-
-        // Uses 2 bits per pixel
         self.interface
-            .data_x_times(spi, color, 2 * (WIDTH / 8 * HEIGHT))?;
+            .data_x_times(spi, color, WIDTH / 8 * HEIGHT)?;
 
         // Clear the red
         self.interface.cmd(spi, Command::DataStartTransmission2)?;
@@ -361,7 +362,7 @@ fn expand_bits(bits: u8) -> [u8; 2] {
     x = (x | (x << 4)) & 0x0F0F;
     x = (x | (x << 2)) & 0x3333;
     x = (x | (x << 1)) & 0x5555;
-    x = x << 1;
+    x = x | (x << 1);
 
     [(x >> 8) as u8, (x & 0xFF) as u8]
 }
