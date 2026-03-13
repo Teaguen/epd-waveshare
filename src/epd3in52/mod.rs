@@ -12,9 +12,9 @@ mod constants;
 use crate::epd3in52::constants::*;
 
 /// Width of epd1in54 in pixels
-pub const WIDTH: u32 = 360;
+pub const WIDTH: u32 = 240;
 /// Height of epd1in54 in pixels
-pub const HEIGHT: u32 = 240;
+pub const HEIGHT: u32 = 360;
 /// Default Background Color (white)
 pub const DEFAULT_BACKGROUND_COLOR: Color = Color::White;
 const IS_BUSY_LOW: bool = true;
