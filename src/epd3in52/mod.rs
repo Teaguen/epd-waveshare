@@ -1,4 +1,4 @@
-//! A simple Driver for the Waveshare 1.54" (B) E-Ink Display via SPI
+//! A simple Driver for the Waveshare 3.52"  E-Ink Display via SPI
 
 use embedded_hal::{delay::*, digital::*, spi::SpiDevice};
 
@@ -12,9 +12,9 @@ mod constants;
 use crate::epd3in52::constants::*;
 
 /// Width of epd1in54 in pixels
-pub const WIDTH: u32 = 360;
+pub const WIDTH: u32 = 240;
 /// Height of epd1in54 in pixels
-pub const HEIGHT: u32 = 240;
+pub const HEIGHT: u32 = 360;
 /// Default Background Color (white)
 pub const DEFAULT_BACKGROUND_COLOR: Color = Color::White;
 const IS_BUSY_LOW: bool = true;
@@ -29,7 +29,7 @@ use crate::buffer_len;
 /// Full size buffer for use with the 1in54b EPD
 /// TODO this should be a TriColor, but let's keep it as is at first
 #[cfg(feature = "graphics")]
-pub type Display1in54b = crate::graphics::Display<
+pub type Display1in52 = crate::graphics::Display<
     WIDTH,
     HEIGHT,
     false,
@@ -38,13 +38,13 @@ pub type Display1in54b = crate::graphics::Display<
 >;
 
 /// Epd1in54b driver
-pub struct Epd1in54b<SPI, BUSY, DC, RST, DELAY> {
+pub struct Epd3in52<SPI, BUSY, DC, RST, DELAY> {
     interface: DisplayInterface<SPI, BUSY, DC, RST, DELAY, SINGLE_BYTE_WRITE>,
     color: Color,
 }
 
 impl<SPI, BUSY, DC, RST, DELAY> InternalWiAdditions<SPI, BUSY, DC, RST, DELAY>
-    for Epd1in54b<SPI, BUSY, DC, RST, DELAY>
+    for Epd3in52<SPI, BUSY, DC, RST, DELAY>
 where
     SPI: SpiDevice,
     BUSY: InputPin,
@@ -90,7 +90,7 @@ where
 }
 
 impl<SPI, BUSY, DC, RST, DELAY> WaveshareThreeColorDisplay<SPI, BUSY, DC, RST, DELAY>
-    for Epd1in54b<SPI, BUSY, DC, RST, DELAY>
+    for Epd3in52<SPI, BUSY, DC, RST, DELAY>
 where
     SPI: SpiDevice,
     BUSY: InputPin,
@@ -140,7 +140,7 @@ where
 }
 
 impl<SPI, BUSY, DC, RST, DELAY> WaveshareDisplay<SPI, BUSY, DC, RST, DELAY>
-    for Epd1in54b<SPI, BUSY, DC, RST, DELAY>
+    for Epd3in52<SPI, BUSY, DC, RST, DELAY>
 where
     SPI: SpiDevice,
     BUSY: InputPin,
@@ -160,7 +160,7 @@ where
         let interface = DisplayInterface::new(busy, dc, rst, delay_us);
         let color = DEFAULT_BACKGROUND_COLOR;
 
-        let mut epd = Epd1in54b { interface, color };
+        let mut epd = Epd3in52 { interface, color };
 
         epd.init(spi, delay)?;
 
@@ -318,7 +318,7 @@ where
     }
 }
 
-impl<SPI, BUSY, DC, RST, DELAY> Epd1in54b<SPI, BUSY, DC, RST, DELAY>
+impl<SPI, BUSY, DC, RST, DELAY> Epd3in52<SPI, BUSY, DC, RST, DELAY>
 where
     SPI: SpiDevice,
     BUSY: InputPin,

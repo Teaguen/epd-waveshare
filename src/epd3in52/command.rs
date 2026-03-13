@@ -1,4 +1,4 @@
-//! SPI Commands for the Waveshare 1.54" red E-Ink Display
+//! SPI Commands for the Waveshare 3.52" red E-Ink Display
 use crate::traits;
 
 #[allow(dead_code)]
