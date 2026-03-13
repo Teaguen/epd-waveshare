@@ -29,7 +29,7 @@ use crate::buffer_len;
 /// Full size buffer for use with the 1in54b EPD
 /// TODO this should be a TriColor, but let's keep it as is at first
 #[cfg(feature = "graphics")]
-pub type Display1in52 = crate::graphics::Display<
+pub type Display3in52 = crate::graphics::Display<
     WIDTH,
     HEIGHT,
     false,
